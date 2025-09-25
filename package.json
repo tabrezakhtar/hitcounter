@@ -1,0 +1,22 @@
+{
+  "name": "hitcounter",
+  "version": "1.0.0",
+  "description": "A simple Hono.js app with a ping endpoint",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "keywords": [
+    "hono",
+    "api",
+    "javascript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hono/node-server": "^1.19.4",
+    "hono": "^4.9.8"
+  },
+  "type": "module"
+}
