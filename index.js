@@ -11,15 +11,24 @@ const app = new Hono()
 app.use('*', cors({
   origin: (origin) => {
     console.log('Incoming request origin:', origin)
-    if (!origin) {
-      console.log(process.env.ALLOWED_DOMAINS.split(',').map(domain => domain.trim()));
-      console.log(process.env.ALLOWED_DOMAINS.split(',').map(domain => domain.trim()).includes(origin));
-      return false;
-    }
+    if (!origin) return false
     const allowedDomains = process.env.ALLOWED_DOMAINS 
       ? process.env.ALLOWED_DOMAINS.split(',').map(domain => domain.trim())
       : []
-    return allowedDomains.includes(origin)
+    console.log('Allowed domains:', allowedDomains)
+    console.log('Origin match result:', allowedDomains.includes(origin))
+    
+    // Check for exact match first
+    if (allowedDomains.includes(origin)) {
+      return true
+    }
+    
+    // Check if origin matches any allowed domain (case insensitive)
+    const originLower = origin.toLowerCase()
+    const isAllowed = allowedDomains.some(domain => domain.toLowerCase() === originLower)
+    console.log('Case insensitive match result:', isAllowed)
+    
+    return isAllowed
   },
   allowMethods: ['GET', 'POST'],
   allowHeaders: ['Content-Type'],
