@@ -83,9 +83,64 @@ function anonymizeReferrer(referrer) {
 
 function sanitizeUserAgent(userAgent) {
   if (!userAgent) return null
-  return userAgent.replace(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g, '[IP_REMOVED]')
-                 .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '[EMAIL_REMOVED]')
-                 .substring(0, 500)
+  
+  const ua = userAgent.toLowerCase()
+  let os = 'Unknown OS'
+  let browser = 'Unknown Browser'
+  
+  // Detect OS
+  if (ua.includes('windows nt 10.0')) os = 'Windows 10/11'
+  else if (ua.includes('windows nt 6.3')) os = 'Windows 8.1'
+  else if (ua.includes('windows nt 6.2')) os = 'Windows 8'
+  else if (ua.includes('windows nt 6.1')) os = 'Windows 7'
+  else if (ua.includes('windows nt')) os = 'Windows'
+  else if (ua.includes('mac os x')) {
+    const macMatch = ua.match(/mac os x ([\d_]+)/)
+    if (macMatch) {
+      const version = macMatch[1].replace(/_/g, '.')
+      os = `macOS ${version}`
+    } else {
+      os = 'macOS'
+    }
+  }
+  else if (ua.includes('linux')) os = 'Linux'
+  else if (ua.includes('android')) {
+    const androidMatch = ua.match(/android ([\d.]+)/)
+    os = androidMatch ? `Android ${androidMatch[1]}` : 'Android'
+  }
+  else if (ua.includes('iphone') || ua.includes('ipad')) {
+    const iosMatch = ua.match(/os ([\d_]+)/)
+    if (iosMatch) {
+      const version = iosMatch[1].replace(/_/g, '.')
+      os = `iOS ${version}`
+    } else {
+      os = 'iOS'
+    }
+  }
+  
+  // Detect Browser
+  if (ua.includes('edg/') || ua.includes('edge/')) {
+    const edgeMatch = ua.match(/edg?\/([\d.]+)/)
+    browser = edgeMatch ? `Microsoft Edge ${edgeMatch[1]}` : 'Microsoft Edge'
+  }
+  else if (ua.includes('chrome/') && !ua.includes('edg')) {
+    const chromeMatch = ua.match(/chrome\/([\d.]+)/)
+    browser = chromeMatch ? `Google Chrome ${chromeMatch[1]}` : 'Google Chrome'
+  }
+  else if (ua.includes('firefox/')) {
+    const firefoxMatch = ua.match(/firefox\/([\d.]+)/)
+    browser = firefoxMatch ? `Mozilla Firefox ${firefoxMatch[1]}` : 'Mozilla Firefox'
+  }
+  else if (ua.includes('safari/') && !ua.includes('chrome')) {
+    const safariMatch = ua.match(/version\/([\d.]+)/)
+    browser = safariMatch ? `Safari ${safariMatch[1]}` : 'Safari'
+  }
+  else if (ua.includes('opera/') || ua.includes('opr/')) {
+    const operaMatch = ua.match(/(?:opera\/|opr\/)([\d.]+)/)
+    browser = operaMatch ? `Opera ${operaMatch[1]}` : 'Opera'
+  }
+  
+  return `${os}, ${browser}`
 }
 
 function sanitizeInput(input) {
