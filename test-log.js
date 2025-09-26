@@ -1,6 +1,7 @@
 async function testLogEndpoint() {
   const testData = {
-    project: "test-website"
+    project: "test-website",
+    page: "/about-us"
   };
 
   try {

@@ -123,6 +123,7 @@ app.post('/log', async (c) => {
     const referrer = c.req.header('referer') || c.req.header('referrer')
     const logData = {
       project: sanitizeInput(requestData.project),
+      page: sanitizeInput(requestData.page),
       userAgent: sanitizeUserAgent(requestData.userAgent || c.req.header('user-agent')),
       ip: anonymizeIP(clientIP),
       referrer: anonymizeReferrer(referrer),

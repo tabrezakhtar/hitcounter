@@ -5,7 +5,21 @@ A simple, privacy-focused hit counter API built with Hono.js that records anonym
 ## Features
 
 - Fast and lightweight API built with [Hono.js](https://hono.dev/)
-- Privacy-first approach with anonymized data collection
+- Privacy-f  const API_URL = 'https://anon-hit-counter.vercel.app/log';
+  
+  function sendHit() {
+    fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        project: projectName,
+        page: window.location.pathname
+      }),
+      keepalive: true
+    }).catch(function(error) {
+      console.debug('Analytics request failed:', error);
+    });
+  }anonymized data collection
 - Simple hit tracking functionality
 - RESTful API endpoints
 - Modern ES modules support
@@ -89,8 +103,8 @@ Records anonymized analytics data.
 **Request Body:**
 ```json
 {
-  "date": "2025-09-26", 
-  "project": "my-website"
+  "project": "my-website",
+  "page": "/about-us"
 }
 ```
 
@@ -106,6 +120,7 @@ Records anonymized analytics data.
 - IP address is automatically extracted from request headers and anonymized
 - User agent is automatically captured and sanitized
 - Referrer is captured and cleaned (query parameters removed)
+- Page parameter is optional but recommended for page-level analytics
 - Localhost requests are ignored
 - Only requests from allowed domains are accepted
 
@@ -122,8 +137,8 @@ This hit counter is designed with privacy in mind:
 
 ### What Is Collected
 
-- **Date**: Request date (YYYY-MM-DD format)
 - **Project**: Project/website identifier  
+- **Page**: Current page path (e.g., /about, /blog/post-1)
 - **User Agent**: Browser information (sanitized)
 - **IP Address**: Anonymized to subnet level
 - **Referrer**: Source website (without query parameters)
@@ -144,8 +159,8 @@ This hit counter is designed with privacy in mind:
 Data is stored in MongoDB with the following structure:
 ```javascript
 {
-  date: "2025-09-26",
-  project: "my-website", 
+  project: "my-website",
+  page: "/about-us",
   userAgent: "Mozilla/5.0 (sanitized)",
   ip: "192.168.1.x",
   referrer: "https://example.com/page",
@@ -248,9 +263,11 @@ To track page visits, add this script just before the closing `</body>` tag in y
 
 **Usage Notes:**
 - Replace `'my-website-name'` with a unique identifier for your project
+- The script automatically captures the current page path (`window.location.pathname`)
 - Script is non-blocking and won't affect page load performance
 - Fails silently if the API is unavailable
 - Only works from domains listed in `ALLOWED_DOMAINS`
+- Provides page-level analytics for understanding user behavior
 
 ## Project Structure
 
@@ -271,14 +288,6 @@ hitcounter/
 - **Server**: @hono/node-server
 - **Database**: MongoDB
 - **Environment**: dotenv
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## License
 
