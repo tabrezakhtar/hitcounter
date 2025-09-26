@@ -129,7 +129,7 @@ Records anonymized analytics data.
 This hit counter is designed with privacy in mind:
 
 - **Anonymized Data**: No personally identifiable information (PII) is collected
-- **IP Anonymization**: IP addresses are masked (e.g., `192.168.1.x`)
+- **IP Anonymization**: IP addresses are heavily masked (e.g., `192.168.x.x`)
 - **Referrer Sanitization**: Query parameters and tracking codes removed
 - **Input Sanitization**: All data is cleaned to prevent injection attacks
 - **No Tracking**: No cookies or persistent tracking mechanisms are used
@@ -139,8 +139,8 @@ This hit counter is designed with privacy in mind:
 
 - **Project**: Project/website identifier  
 - **Page**: Current page path (e.g., /about, /blog/post-1)
-- **User Agent**: Browser information (sanitized)
-- **IP Address**: Anonymized to subnet level
+- **User Agent**: Browser and OS information (e.g., "Windows 10/11, Google Chrome 140.0.0.0")
+- **IP Address**: Heavily anonymized to network level (last 2 octets removed)
 - **Referrer**: Source website (without query parameters)
 - **Timestamp**: Server timestamp when request was processed
 
@@ -161,8 +161,8 @@ Data is stored in MongoDB with the following structure:
 {
   project: "my-website",
   page: "/about-us",
-  userAgent: "Mozilla/5.0 (sanitized)",
-  ip: "192.168.1.x",
+  userAgent: "Windows 10/11, Google Chrome 140.0.0.0",
+  ip: "192.168.x.x",
   referrer: "https://example.com/page",
   timestamp: "2025-09-26T10:30:00.000Z"
 }

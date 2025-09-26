@@ -59,13 +59,13 @@ function anonymizeIP(ip) {
   if (ip.includes('.') && !ip.includes(':')) {
     const parts = ip.split('.')
     if (parts.length === 4) {
-      return `${parts[0]}.${parts[1]}.${parts[2]}.x`
+      return `${parts[0]}.${parts[1]}.x.x`
     }
   }
   if (ip.includes(':')) {
     const parts = ip.split(':')
     if (parts.length >= 3) {
-      return `${parts[0]}:${parts[1]}:${parts[2]}:x:x:x:x:x`
+      return `${parts[0]}:${parts[1]}:x:x:x:x:x:x`
     }
   }
   return null
