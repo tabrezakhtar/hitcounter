@@ -57,8 +57,7 @@ app.get('/ping', (c) => {
 
 app.get('/', (c) => {
   return c.json({ 
-    message: 'Hono.js app is running!',
-    endpoints: ['/ping', '/log']
+    message: 'Hono.js app is running!'
   })
 })
 
