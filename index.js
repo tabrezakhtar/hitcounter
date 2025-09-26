@@ -13,6 +13,7 @@ app.use('*', cors({
     console.log('Incoming request origin:', origin)
     if (!origin) {
       console.log(process.env.ALLOWED_DOMAINS.split(',').map(domain => domain.trim()));
+      console.log(process.env.ALLOWED_DOMAINS.split(',').map(domain => domain.trim()).includes(origin));
       return false;
     }
     const allowedDomains = process.env.ALLOWED_DOMAINS 
