@@ -20,15 +20,15 @@ app.use('*', cors({
     
     // Check for exact match first
     if (allowedDomains.includes(origin)) {
-      return true
+      return origin  // Return the actual origin, not true
     }
     
     // Check if origin matches any allowed domain (case insensitive)
     const originLower = origin.toLowerCase()
-    const isAllowed = allowedDomains.some(domain => domain.toLowerCase() === originLower)
-    console.log('Case insensitive match result:', isAllowed)
+    const matchedDomain = allowedDomains.find(domain => domain.toLowerCase() === originLower)
+    console.log('Case insensitive match result:', !!matchedDomain)
     
-    return isAllowed
+    return matchedDomain || false  // Return the matched domain or false
   },
   allowMethods: ['GET', 'POST'],
   allowHeaders: ['Content-Type'],
