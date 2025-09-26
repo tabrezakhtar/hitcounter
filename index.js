@@ -1,11 +1,26 @@
 import { Hono } from 'hono'
 import { serve } from '@hono/node-server'
+import { cors } from 'hono/cors'
 import { MongoClient } from 'mongodb'
 import dotenv from 'dotenv'
 
 dotenv.config()
 
 const app = new Hono()
+
+app.use('*', cors({
+  origin: (origin) => {
+    if (!origin) return false
+    const allowedDomains = process.env.ALLOWED_DOMAINS 
+      ? process.env.ALLOWED_DOMAINS.split(',').map(domain => domain.trim())
+      : []
+    return allowedDomains.includes(origin)
+  },
+  allowMethods: ['GET', 'POST'],
+  allowHeaders: ['Content-Type'],
+  credentials: false
+}))
+
 let db = null
 let client = null
 
@@ -24,15 +39,6 @@ async function connectToDatabase() {
 }
 
 await connectToDatabase()
-
-const allowedDomains = process.env.ALLOWED_DOMAINS 
-  ? process.env.ALLOWED_DOMAINS.split(',').map(domain => domain.trim())
-  : []
-
-function isAllowedOrigin(origin) {
-  if (!origin) return false
-  return allowedDomains.includes(origin)
-}
 
 function anonymizeIP(ip) {
   if (!ip) return null
@@ -88,12 +94,6 @@ app.get('/', (c) => {
 
 app.post('/log', async (c) => {
   try {
-    const origin = c.req.header('origin') || c.req.header('referer')
-    if (!isAllowedOrigin(origin)) {
-      return c.json({ 
-        error: 'Unauthorized domain' 
-      }, 403)
-    }
     const clientIP = c.req.header('x-forwarded-for')?.split(',')[0] || 
                      c.req.header('x-real-ip') || 
                      c.req.header('cf-connecting-ip') ||
