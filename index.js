@@ -51,6 +51,31 @@ function anonymizeIP(ip) {
   return null
 }
 
+function anonymizeReferrer(referrer) {
+  if (!referrer) return null
+  try {
+    const url = new URL(referrer)
+    return `${url.protocol}//${url.host}${url.pathname}`
+  } catch (error) {
+    return null
+  }
+}
+
+function sanitizeUserAgent(userAgent) {
+  if (!userAgent) return null
+  return userAgent.replace(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g, '[IP_REMOVED]')
+                 .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '[EMAIL_REMOVED]')
+                 .substring(0, 500)
+}
+
+function sanitizeInput(input) {
+  if (!input || typeof input !== 'string') return null
+  return input.replace(/[<>\"'&]/g, '')
+              .replace(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g, '[IP_REMOVED]')
+              .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '[EMAIL_REMOVED]')
+              .substring(0, 100)
+}
+
 app.get('/ping', (c) => {
   return c.text('hello')
 })
@@ -69,17 +94,25 @@ app.post('/log', async (c) => {
         error: 'Unauthorized domain' 
       }, 403)
     }
-    const requestData = await c.req.json()
     const clientIP = c.req.header('x-forwarded-for')?.split(',')[0] || 
                      c.req.header('x-real-ip') || 
                      c.req.header('cf-connecting-ip') ||
                      c.env?.ip ||
                      'unknown'
+    if (clientIP === '127.0.0.1' || clientIP === '::1' || clientIP.startsWith('192.168.') || clientIP.startsWith('10.') || clientIP.startsWith('172.')) {
+      return c.json({ 
+        success: true, 
+        message: 'Localhost request ignored' 
+      })
+    }
+    const requestData = await c.req.json()
+    const referrer = c.req.header('referer') || c.req.header('referrer')
     const logData = {
-      date: requestData.date,
-      project: requestData.project,
-      userAgent: requestData.userAgent || c.req.header('user-agent'),
+      date: sanitizeInput(requestData.date),
+      project: sanitizeInput(requestData.project),
+      userAgent: sanitizeUserAgent(requestData.userAgent || c.req.header('user-agent')),
       ip: anonymizeIP(clientIP),
+      referrer: anonymizeReferrer(referrer),
       timestamp: new Date().toISOString()
     }
     if (!logData.date || !logData.project) {
@@ -90,8 +123,7 @@ app.post('/log', async (c) => {
     const result = await db.collection('logs').insertOne(logData)
     return c.json({ 
       success: true, 
-      message: 'Log entry created successfully',
-      id: result.insertedId
+      message: 'Log entry created successfully'
     })
   } catch (error) {
     console.error('Error saving log data:', error)
