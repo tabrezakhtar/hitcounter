@@ -11,7 +11,10 @@ const app = new Hono()
 app.use('*', cors({
   origin: (origin) => {
     console.log('Incoming request origin:', origin)
-    if (!origin) return false
+    if (!origin) {
+      console.log(process.env.ALLOWED_DOMAINS.split(',').map(domain => domain.trim()));
+      return false;
+    }
     const allowedDomains = process.env.ALLOWED_DOMAINS 
       ? process.env.ALLOWED_DOMAINS.split(',').map(domain => domain.trim())
       : []
