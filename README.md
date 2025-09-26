@@ -213,11 +213,11 @@ To track page visits, add this script just before the closing `</body>` tag in y
 <script>
 (function(projectName) {
   if (!projectName || typeof projectName !== 'string') {
-    console.error('Anon Hit Counter: Project name is required');
+    console.error('Hit Counter: Project name is required');
     return;
   }
   
-  const API_URL = 'https://anon-hit-counter.vercel.app/log';
+  const API_URL = 'https://<YOUR API URL>/log';
   
   function getCurrentDate() {
     return new Date().toISOString().split('T')[0];
