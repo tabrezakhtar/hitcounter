@@ -25,6 +25,15 @@ async function connectToDatabase() {
 
 await connectToDatabase()
 
+const allowedDomains = process.env.ALLOWED_DOMAINS 
+  ? process.env.ALLOWED_DOMAINS.split(',').map(domain => domain.trim())
+  : []
+
+function isAllowedOrigin(origin) {
+  if (!origin) return false
+  return allowedDomains.includes(origin)
+}
+
 function anonymizeIP(ip) {
   if (!ip) return null
   if (ip.includes('.') && !ip.includes(':')) {
@@ -55,6 +64,12 @@ app.get('/', (c) => {
 
 app.post('/log', async (c) => {
   try {
+    const origin = c.req.header('origin') || c.req.header('referer')
+    if (!isAllowedOrigin(origin)) {
+      return c.json({ 
+        error: 'Unauthorized domain' 
+      }, 403)
+    }
     const requestData = await c.req.json()
     const clientIP = c.req.header('x-forwarded-for')?.split(',')[0] || 
                      c.req.header('x-real-ip') || 
