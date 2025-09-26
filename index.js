@@ -108,16 +108,15 @@ app.post('/log', async (c) => {
     const requestData = await c.req.json()
     const referrer = c.req.header('referer') || c.req.header('referrer')
     const logData = {
-      date: sanitizeInput(requestData.date),
       project: sanitizeInput(requestData.project),
       userAgent: sanitizeUserAgent(requestData.userAgent || c.req.header('user-agent')),
       ip: anonymizeIP(clientIP),
       referrer: anonymizeReferrer(referrer),
       timestamp: new Date().toISOString()
     }
-    if (!logData.date || !logData.project) {
+    if (!logData.project) {
       return c.json({ 
-        error: 'Missing required fields: date and project are required' 
+        error: 'Missing required field: project is required' 
       }, 400)
     }
     const result = await db.collection('logs').insertOne(logData)
