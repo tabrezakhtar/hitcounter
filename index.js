@@ -168,10 +168,23 @@ app.post('/log', async (c) => {
                      c.req.header('cf-connecting-ip') ||
                      c.env?.ip ||
                      'unknown'
+    // Check for localhost
     if (clientIP === '127.0.0.1' || clientIP === '::1' || clientIP.startsWith('192.168.') || clientIP.startsWith('10.') || clientIP.startsWith('172.')) {
       return c.json({ 
         success: true, 
         message: 'Localhost request ignored' 
+      })
+    }
+    
+    // Check ignore IP list
+    const ignoreIPs = process.env.IGNORE_IPS 
+      ? process.env.IGNORE_IPS.split(',').map(ip => ip.trim())
+      : []
+    
+    if (ignoreIPs.includes(clientIP)) {
+      return c.json({ 
+        success: true, 
+        message: 'IP ignored' 
       })
     }
     const requestData = await c.req.json()
