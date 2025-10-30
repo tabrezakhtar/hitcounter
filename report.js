@@ -1,5 +1,6 @@
 import { MongoClient } from 'mongodb'
 import dotenv from 'dotenv'
+import moment from 'moment'
 
 dotenv.config()
 
@@ -77,10 +78,12 @@ async function viewLast24Hours() {
     
     // Display logs as pretty-printed colored JSON
     logs.forEach((log, index) => {
-      // Convert ObjectId to string for better display
+      // Convert ObjectId to string and format timestamp for better display
       const logForDisplay = {
         ...log,
-        _id: log._id.toString()
+        _id: log._id.toString(),
+        // timestamp: log.timestamp,
+        timestamp: moment(log.timestamp).fromNow()
       }
       
       console.log(colorizeJson(logForDisplay))
