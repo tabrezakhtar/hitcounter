@@ -48,7 +48,7 @@ function colorizeJson(obj, indent = 0) {
   return String(obj)
 }
 
-async function viewLast24Hours() {
+async function viewLogs(hours = 8) {
   let client = null
   
   try {
@@ -57,24 +57,24 @@ async function viewLast24Hours() {
     await client.connect()
     const db = client.db()
     
-    console.log(`${colors.bright}${colors.blue}Fetching logs from the last 24 hours...${colors.reset}\n`)
+    console.log(`${colors.bright}${colors.blue}Fetching logs from the last ${hours} hours...${colors.reset}\n`)
     
-    // Get logs from last 24 hours
-    const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000)
+    // Get logs from specified hours
+    const cutoffTime = new Date(Date.now() - hours * 60 * 60 * 1000)
     
     const logs = await db.collection('logs')
       .find({
-        timestamp: { $gte: last24Hours.toISOString() }
+        timestamp: { $gte: cutoffTime.toISOString() }
       })
       .sort({ timestamp: -1 }) // Most recent first
       .toArray()
     
     if (logs.length === 0) {
-      console.log(`${colors.yellow}No logs found in the last 24 hours.${colors.reset}`)
+      console.log(`${colors.yellow}No logs found in the last ${hours} hours.${colors.reset}`)
       return
     }
     
-    console.log(`${colors.bright}Found ${colors.yellow}${logs.length}${colors.reset}${colors.bright} logs in the last 24 hours:${colors.reset}\n`)
+    console.log(`${colors.bright}Found ${colors.yellow}${logs.length}${colors.reset}${colors.bright} logs in the last ${hours} hours:${colors.reset}\n`)
     
     // Display logs as pretty-printed colored JSON
     logs.forEach((log, index) => {
@@ -99,4 +99,4 @@ async function viewLast24Hours() {
   }
 }
 
-viewLast24Hours()
+viewLogs()
