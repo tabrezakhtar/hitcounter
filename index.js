@@ -85,6 +85,85 @@ function sanitizeUserAgent(userAgent) {
   if (!userAgent) return null
   
   const ua = userAgent.toLowerCase()
+  
+  // Bot detection - check for common bot patterns first
+  const botPatterns = [
+    /bingbot/i,
+    /googlebot/i,
+    /slurp/i, // Yahoo
+    /duckduckbot/i,
+    /baiduspider/i,
+    /yandexbot/i,
+    /facebookexternalhit/i,
+    /twitterbot/i,
+    /linkedinbot/i,
+    /whatsapp/i,
+    /telegrambot/i,
+    /applebot/i,
+    /amazonbot/i,
+    /discordbot/i,
+    /slackbot/i,
+    /skypeuri/i,
+    // AI search engines
+    /perplexitybot/i,
+    /claude-web/i,
+    /gptbot/i,
+    /chatgpt-user/i,
+    /bard/i,
+    /anthropic/i,
+    /openai/i,
+    /you\.com/i,
+    /phind/i,
+    /searchgpt/i,
+    /copilot/i,
+    /bing.*ai/i,
+    /crawl/i,
+    /spider/i,
+    /bot\//i,
+    /bot$/i
+  ]
+  
+  // Check for bot patterns
+  for (const pattern of botPatterns) {
+    const match = userAgent.match(pattern)
+    if (match) {
+      // Extract bot name more specifically
+      if (ua.includes('bingbot')) return 'bingbot'
+      if (ua.includes('googlebot')) return 'googlebot'
+      if (ua.includes('slurp')) return 'yahoo-slurp'
+      if (ua.includes('duckduckbot')) return 'duckduckbot'
+      if (ua.includes('baiduspider')) return 'baiduspider'
+      if (ua.includes('yandexbot')) return 'yandexbot'
+      if (ua.includes('facebookexternalhit')) return 'facebook-bot'
+      if (ua.includes('twitterbot')) return 'twitterbot'
+      if (ua.includes('linkedinbot')) return 'linkedinbot'
+      if (ua.includes('whatsapp')) return 'whatsapp-bot'
+      if (ua.includes('telegrambot')) return 'telegrambot'
+      if (ua.includes('applebot')) return 'applebot'
+      if (ua.includes('amazonbot')) return 'amazonbot'
+      if (ua.includes('discordbot')) return 'discordbot'
+      if (ua.includes('slackbot')) return 'slackbot'
+      if (ua.includes('skypeuri')) return 'skype-bot'
+      
+      // AI search engines and assistants
+      if (ua.includes('perplexitybot')) return 'perplexity-bot'
+      if (ua.includes('claude-web')) return 'claude-web'
+      if (ua.includes('gptbot')) return 'gptbot'
+      if (ua.includes('chatgpt-user')) return 'chatgpt-user'
+      if (ua.includes('bard')) return 'google-bard'
+      if (ua.includes('anthropic')) return 'anthropic-bot'
+      if (ua.includes('openai')) return 'openai-bot'
+      if (ua.includes('you.com')) return 'you-com-bot'
+      if (ua.includes('phind')) return 'phind-bot'
+      if (ua.includes('searchgpt')) return 'searchgpt'
+      if (ua.includes('copilot')) return 'copilot-bot'
+      if (ua.includes('bing') && ua.includes('ai')) return 'bing-ai'
+      
+      // Generic bot detection
+      return 'bot'
+    }
+  }
+  
   let os = 'Unknown OS'
   let browser = 'Unknown Browser'
   
