@@ -48,7 +48,7 @@ function colorizeJson(obj, indent = 0) {
   return String(obj)
 }
 
-async function viewLogs(hours = 8) {
+async function viewLogs(hours = 12) {
   let client = null
   
   try {
@@ -64,9 +64,10 @@ async function viewLogs(hours = 8) {
     
     const logs = await db.collection('logs')
       .find({
-        timestamp: { $gte: cutoffTime.toISOString() }
+        timestamp: { $gte: cutoffTime.toISOString() },
+        ip: { $not: /^92\.41/ }
       })
-      .sort({ timestamp: -1 }) // Most recent first
+      .sort({ timestamp: 1 }) // Most recent first
       .toArray()
     
     if (logs.length === 0) {
