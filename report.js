@@ -66,7 +66,7 @@ async function viewLogs(hours = 12) {
       .find({
         timestamp: { $gte: cutoffTime.toISOString() },
         ip: { $not: /^92\.41/ },
-        referrer: { $not: /guitar-db-ui\.netlify\.app/ }
+        referrer: { $not: /\.netlify\.app/ }
       })
       .sort({ timestamp: 1 }) // Most recent first
       .toArray()
