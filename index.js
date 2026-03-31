@@ -274,7 +274,8 @@ app.post('/log', async (c) => {
       userAgent: sanitizeUserAgent(requestData.userAgent || c.req.header('user-agent')),
       ip: anonymizeIP(clientIP),
       referrer: anonymizeReferrer(referrer),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      mode: requestData.mode
     }
     if (!logData.project) {
       return c.json({ 
