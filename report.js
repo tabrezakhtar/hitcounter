@@ -85,7 +85,8 @@ async function viewLogs(hours = 12) {
         ...log,
         _id: log._id.toString(),
         // timestamp: log.timestamp,
-        timestamp: moment(log.timestamp).fromNow()
+        timestamp: moment(log.timestamp).fromNow(),
+        mode: log.mode
       }
       
       console.log(colorizeJson(logForDisplay))
