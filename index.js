@@ -282,6 +282,16 @@ app.post('/log', async (c) => {
         error: 'Missing required field: project is required' 
       }, 400)
     }
+    
+    // Filter out bots - do not save bot requests to database
+    if (logData.userAgent && (
+      logData.userAgent.endsWith('bot') ||
+      logData.userAgent.endsWith('-bot') ||
+      logData.userAgent.includes('bot') && !logData.userAgent.includes(',')
+    )) {
+      return c.body(null, 204)
+    }
+    
     const result = await db.collection('logs').insertOne(logData)
     return c.json({ 
       success: true, 
